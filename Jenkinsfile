@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Pull the code from your GitHub repository
-                git 'https://github.com/SKBtrivedi/EcommerceMicroservices.git'
+                git branch: 'main', url: 'https://github.com/SKBtrivedi/EcommerceMicroservices.git'
             }
         }
 
