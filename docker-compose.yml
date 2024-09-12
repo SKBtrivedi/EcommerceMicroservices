@@ -1,0 +1,131 @@
+version: "3.3"
+
+services:
+  # Product Service
+  product-service:
+    build:
+      context: ./ProductService
+      dockerfile: ProductServiceDockerFile.dockerfile
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # Cart Service
+  cart-service:
+    build:
+      context: ./CartService
+      dockerfile: CartService.dockerfile
+    container_name: cart-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # API Gateway Service
+  api-gateway-service:
+    build:
+      context: ./ApiGatewayService
+      dockerfile: ApiGateway.dockerfile
+    container_name: api-gateway-service
+    ports:
+      - "8087:8087"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # Eureka Server Service
+  eureka-server-service:
+    build:
+      context: ./EurekaServerService
+      dockerfile: EurekaSever.dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - ecommerce-network
+
+  # Price Service
+  price-service:
+    build:
+      context: ./PriceService
+      dockerfile: PriceService.dockerfile
+    container_name: price-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # Product Detail Service
+  product-detail-service:
+    build:
+      context: ./ProductDetailService
+      dockerfile: ProductDetailService.dockerfile
+    container_name: product-detail-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # Checkout Service
+  checkout-service:
+    build:
+      context: ./CheckoutService
+      dockerfile: CheckoutService.dockerfile
+    container_name: checkout-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./NotificationService
+      dockerfile: NotificationService.dockerfile
+    container_name: notification-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - eureka-server-service
+    networks:
+      - ecommerce-network
+
+networks:
+  ecommerce-network:
+    driver: bridge
