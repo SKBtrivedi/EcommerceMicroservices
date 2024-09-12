@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'skbtrivedi/ecommerce-microservices'  // Update this with your Docker image name
+        DOCKER_IMAGE = 'skbtrivedi/ecommerce-microservices'  // Update with your Docker image name
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')  // Ensure this matches the Jenkins credentials ID
     }
@@ -19,7 +19,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                    bat 'docker build -t ${DOCKER_IMAGE}:$BUILD_NUMBER .'
+                    sh 'docker build -t ${DOCKER_IMAGE}:$BUILD_NUMBER .'
                 }
             }
         }
@@ -28,9 +28,9 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker and push the image to Docker Hub
-                    bat 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                    bat 'docker tag ${DOCKER_IMAGE}:$BUILD_NUMBER ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
-                    bat 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                    sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+                    sh 'docker tag ${DOCKER_IMAGE}:$BUILD_NUMBER ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                    sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // Use kubectl to deploy the Docker image to your Kubernetes cluster
-                    bat 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                    sh 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
@@ -48,7 +48,7 @@ pipeline {
     post {
         always {
             // Clean up Docker resources after every build
-            bat 'docker system prune -f'
+            sh 'docker system prune -f'
         }
 
         success {
