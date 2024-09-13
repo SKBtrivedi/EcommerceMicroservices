@@ -14,6 +14,11 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/SKBtrivedi/EcommerceMicroservices.git'
             }
         }
+        stage('Check Docker') {
+            steps {
+                sh 'docker --version'
+            }
+        }
 
         stage('Build Docker Images') {
             steps {
