@@ -19,6 +19,22 @@ pipeline {
                 sh 'docker --version'
             }
         }
+        // Add a stage to build the microservices using Maven
+        stage('Build Microservices') {
+            steps {
+                script {
+                    // Build each microservice individually using Maven
+                    sh 'mvn -f ApiGatewayService/pom.xml clean install'
+                    sh 'mvn -f CartService/pom.xml clean install'
+                    sh 'mvn -f CheckOutService/pom.xml clean install'
+                    sh 'mvn -f EurekaServerService/pom.xml clean install'
+                    sh 'mvn -f NotificationService/pom.xml clean install'
+                    sh 'mvn -f PriceService/pom.xml clean install'
+                    sh 'mvn -f ProductDetailService/pom.xml clean install'
+                    sh 'mvn -f ProductService/pom.xml clean install'
+                }
+            }
+        }
 
         stage('Build Docker Images') {
             steps {
