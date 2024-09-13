@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Build each microservice individually using Maven
-                  echo 'Sucess 'Build Microservices'
+                  echo 'Sucess Build Microservices'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                   echo 'Sucess 'Docker Image Created'
+                   echo 'Sucess Docker Image Created'
                 }
             }
         }
