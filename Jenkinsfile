@@ -34,7 +34,7 @@ pipeline {
                 script {
                     // Log in to Docker and push the image to Docker Hub
                      sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                     sh 'docker-compose -f path/to/docker-compose.yml push'
+                     sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
                 }
             }
         }
