@@ -29,7 +29,14 @@ pipeline {
             steps {
                 script {
                     // Build each microservice individually using Maven
-                  echo 'Sucess Build Microservices'
+                    sh 'mvn -f ApiGatewayService/pom.xml clean install'
+                    sh 'mvn -f CartService/pom.xml clean install'
+                    sh 'mvn -f CheckOutService/pom.xml clean install'
+                    sh 'mvn -f EurekaServerService/pom.xml clean install'
+                    sh 'mvn -f NotificationService/pom.xml clean install'
+                    sh 'mvn -f PriceService/pom.xml clean install'
+                    sh 'mvn -f ProductDetailService/pom.xml clean install'
+                    sh 'mvn -f ProductService/pom.xml clean install'
                 }
             }
         }
@@ -38,7 +45,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                   echo 'Sucess Docker Image Created'
+                  sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
                 }
             }
         }
@@ -47,7 +54,8 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker and push the image to Docker Hub
-                      echo 'Docker Image Pushed'
+                     sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+                     sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
                 }
             }
         }
@@ -56,7 +64,7 @@ pipeline {
             steps {
                 script {
                     // Use kubectl to deploy the Docker image to your Kubernetes cluster
-                     echo 'Deployed to kubernates'
+                    sh 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
@@ -65,7 +73,7 @@ pipeline {
     post {
         always {
             // Clean up Docker resources after every build
-             echo 'resources cleaned'
+            sh 'docker system prune -f'
         }
 
         success {
