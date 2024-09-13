@@ -9,6 +9,7 @@ pipeline {
     
      tools {
         maven 'Maven' // This should match the name in the Global Tool Configuration
+        jdk 'JDK 21'
     }
 
     stages {
