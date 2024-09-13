@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Check Docker') {
             steps {
-                 'docker --version'
+                bat 'docker --version'
             }
         }
 
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                     'docker build -t ${DOCKER_IMAGE}:$BUILD_NUMBER .'
+                    bat 'docker build -t ${DOCKER_IMAGE}:$BUILD_NUMBER .'
                 }
             }
         }
@@ -33,9 +33,9 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker and push the image to Docker Hub
-                     'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                     'docker tag ${DOCKER_IMAGE}:$BUILD_NUMBER ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
-                     'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                     bat 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+                     bat 'docker tag ${DOCKER_IMAGE}:$BUILD_NUMBER ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                     bat 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     // Use kubectl to deploy the Docker image to your Kubernetes cluster
-                     'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                    bat 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
