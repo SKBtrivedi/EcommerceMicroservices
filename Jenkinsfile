@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                    sh 'docker build -t ${DOCKER_IMAGE}:$BUILD_NUMBER .'
+                    sh 'docker-compose -f path/to/docker-compose.yml build'
                 }
             }
         }
@@ -34,8 +34,7 @@ pipeline {
                 script {
                     // Log in to Docker and push the image to Docker Hub
                      sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                     sh 'docker tag ${DOCKER_IMAGE}:$BUILD_NUMBER ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
-                     sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                     sh 'docker-compose -f path/to/docker-compose.yml push'
                 }
             }
         }
