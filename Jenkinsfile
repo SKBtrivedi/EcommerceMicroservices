@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                    sh 'docker-compose -f path/to/docker-compose.yml build'
+                  sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
                 }
             }
         }
