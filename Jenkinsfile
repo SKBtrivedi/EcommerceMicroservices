@@ -6,6 +6,10 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')  // Ensure this matches the Jenkins credentials ID
     }
+    
+     tools {
+        maven 'Maven' // This should match the name in the Global Tool Configuration
+    }
 
     stages {
         stage('Checkout Code') {
