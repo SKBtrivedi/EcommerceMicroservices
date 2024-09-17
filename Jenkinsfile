@@ -34,21 +34,9 @@ pipeline {
             }
         }
 
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    bat 'docker-compose -f /mnt/c/ProgramData/Jenkins/.jenkins/workspace/ecommerce-app-pipeline/docker-compose.yml build'  // Adjust path for WSL
-                }
-            }
-        }
-
     }
 
-    post {
-        always {
-            bat 'docker system prune -f'  // Clean up Docker resources in WSL
-        }
-
+    post { 
         success {
             echo 'Build and Deployment Successful!'
         }
