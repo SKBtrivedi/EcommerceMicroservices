@@ -6,10 +6,10 @@ pipeline {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')  // Ensure this matches the Jenkins credentials ID
     }
-    
-     tools {
+
+    tools {
         maven 'Maven' // This should match the name in the Global Tool Configuration
-        jdk 'Java 21'
+        jdk 'Java 21'  // Ensure this matches your Jenkins JDK configuration
     }
 
     stages {
@@ -19,12 +19,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/SKBtrivedi/EcommerceMicroservices.git'
             }
         }
+
         stage('Check Docker') {
             steps {
-                bat 'docker --version'
+                bat 'docker --version'  // Use 'bat' instead of 'sh' on Windows
             }
         }
-        // Add a stage to build the microservices using Maven
+
         stage('Build Microservices') {
             steps {
                 script {
@@ -44,8 +45,8 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    // Build Docker images for each microservice
-                  bat 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
+                    // Ensure the docker-compose.yml path is correct
+                    bat 'docker-compose -f %WORKSPACE%\\docker-compose.yml build'  // Use Windows-compatible paths
                 }
             }
         }
@@ -54,8 +55,8 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker and push the image to Docker Hub
-                     bat 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                     bat 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
+                    bat 'echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin'
+                    bat 'docker-compose -f %WORKSPACE%\\docker-compose.yml push'
                 }
             }
         }
@@ -64,7 +65,7 @@ pipeline {
             steps {
                 script {
                     // Use kubectl to deploy the Docker image to your Kubernetes cluster
-                    bat 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
+                    bat 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=%DOCKER_REGISTRY%/%DOCKER_IMAGE%:%BUILD_NUMBER%'
                 }
             }
         }
