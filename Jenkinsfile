@@ -2,42 +2,40 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'skbtrivedi/ecommerce-microservices'  // Update with your Docker image name
+        DOCKER_IMAGE = 'skbtrivedi/ecommerce-microservices'
         DOCKER_REGISTRY = 'docker.io'
-        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')  // Ensure this matches the Jenkins credentials ID
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
     }
 
     tools {
-        maven 'Maven' // This should match the name in the Global Tool Configuration
-        jdk 'Java 21'  // Ensure this matches your Jenkins JDK configuration
+        maven 'Maven'
+        jdk 'Java 21'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                // Pull the code from your GitHub repository
                 git branch: 'main', url: 'https://github.com/SKBtrivedi/EcommerceMicroservices.git'
             }
         }
-
+        
         stage('Check Docker') {
             steps {
-                bat 'docker --version'  // Use 'bat' instead of 'sh' on Windows
+                bat 'wsl docker --version'  // Use WSL to check Docker version
             }
         }
 
         stage('Build Microservices') {
             steps {
                 script {
-                    // Build each microservice individually using Maven
-                    bat 'mvn -f ApiGatewayService/pom.xml clean install'
-                    bat 'mvn -f CartService/pom.xml clean install'
-                    bat 'mvn -f CheckOutService/pom.xml clean install'
-                    bat 'mvn -f EurekaServerService/pom.xml clean install'
-                    bat 'mvn -f NotificationService/pom.xml clean install'
-                    bat 'mvn -f PriceService/pom.xml clean install'
-                    bat 'mvn -f ProductDetailService/pom.xml clean install'
-                    bat 'mvn -f ProductService/pom.xml clean install'
+                    bat 'wsl mvn -f ApiGatewayService/pom.xml clean install'
+                    bat 'wsl mvn -f CartService/pom.xml clean install'
+                    bat 'wsl mvn -f CheckOutService/pom.xml clean install'
+                    bat 'wsl mvn -f EurekaServerService/pom.xml clean install'
+                    bat 'wsl mvn -f NotificationService/pom.xml clean install'
+                    bat 'wsl mvn -f PriceService/pom.xml clean install'
+                    bat 'wsl mvn -f ProductDetailService/pom.xml clean install'
+                    bat 'wsl mvn -f ProductService/pom.xml clean install'
                 }
             }
         }
@@ -45,8 +43,7 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    // Ensure the docker-compose.yml path is correct
-                    bat 'docker-compose -f %WORKSPACE%\\docker-compose.yml build'  // Use Windows-compatible paths
+                    bat 'wsl docker-compose -f /mnt/c/ProgramData/Jenkins/.jenkins/workspace/ecommerce-app-pipeline/docker-compose.yml build'  // Adjust path for WSL
                 }
             }
         }
@@ -54,9 +51,8 @@ pipeline {
         stage('Push Docker Images') {
             steps {
                 script {
-                    // Log in to Docker and push the image to Docker Hub
-                    bat 'echo %DOCKER_HUB_CREDENTIALS_PSW% | docker login -u %DOCKER_HUB_CREDENTIALS_USR% --password-stdin'
-                    bat 'docker-compose -f %WORKSPACE%\\docker-compose.yml push'
+                    bat 'wsl echo $DOCKER_HUB_CREDENTIALS_PSW | wsl docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+                    bat 'wsl docker-compose -f /mnt/c/ProgramData/Jenkins/.jenkins/workspace/ecommerce-app-pipeline/docker-compose.yml push'
                 }
             }
         }
@@ -64,8 +60,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Use kubectl to deploy the Docker image to your Kubernetes cluster
-                    bat 'kubectl set image deployment/ecommerce-deployment ecommerce-microservices=%DOCKER_REGISTRY%/%DOCKER_IMAGE%:%BUILD_NUMBER%'
+                    bat 'wsl kubectl set image deployment/ecommerce-deployment ecommerce-microservices=${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$BUILD_NUMBER'
                 }
             }
         }
@@ -73,8 +68,7 @@ pipeline {
 
     post {
         always {
-            // Clean up Docker resources after every build
-            bat 'docker system prune -f'
+            bat 'wsl docker system prune -f'  // Clean up Docker resources in WSL
         }
 
         success {
