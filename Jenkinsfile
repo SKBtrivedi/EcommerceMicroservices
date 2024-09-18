@@ -19,10 +19,18 @@ pipeline {
                 sh 'docker --version'
             }
         }
+        stage('Build with Java 21') {
+            agent {
+                docker {
+                    image 'maven:3.9.4-eclipse-temurin-21'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
+                }
+            }
         // Add a stage to build the microservices using Maven
         stage('Build Microservices') {
             steps {
                 script {
+                    sh 'java -version'
                     // Build each microservice individually using Maven
                     sh 'mvn -f ApiGatewayService/pom.xml clean install'
                     sh 'mvn -f CartService/pom.xml clean install'
