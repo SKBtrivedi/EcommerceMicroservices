@@ -26,8 +26,6 @@ pipeline {
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u root'
                 }
             }
-        // Add a stage to build the microservices using Maven
-        stage('Build Microservices') {
             steps {
                 script {
                     sh 'java -version'
@@ -48,7 +46,7 @@ pipeline {
             steps {
                 script {
                     // Build Docker images for each microservice
-                  sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
+                    sh 'docker-compose -f /var/jenkins_home/workspace/ecommerce-app-pipeline/docker-compose.yml build'
                 }
             }
         }
